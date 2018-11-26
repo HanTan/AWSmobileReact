@@ -7,9 +7,9 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import {Platform, StyleSheet, Text, View, AlertIOS} from 'react-native';
 import { withAuthenticator } from "aws-amplify-react-native";
-import { Storage } from "aws-amplify";
+import { Storage, Analytics, API } from "aws-amplify";
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -26,9 +26,29 @@ Storage.put('hans/test.txt', 'Hello')
 Storage.get('test.txt')
     .then(result => console.log(result))
     .catch(err => console.log(err));
+  
+Analytics.record('Apps on');
 
 type Props = {};
 class App extends Component<Props> {
+
+  async componentDidMount() {
+    try {
+      const data = await API.get('sampleCloudApi', '/items')
+      AlertIOS.alert(
+        'data Complete',
+        JSON.stringify(data)
+       );
+      console.log('data: ', data)
+    } catch (error) {
+      AlertIOS.alert(
+        'data error',
+        JSON.stringify(error.message)
+        
+       );
+    }
+  }
+
   render() {
     return (
       <View style={styles.container}>
